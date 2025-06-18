@@ -73,4 +73,39 @@ $(document).ready(function () {
             }
         });
     });
+
+    $('#itable tbody').on('click', 'a.editBtn', function (e) {
+        e.preventDefault();
+        $('#itemImage').remove()
+        $('#itemId').remove()
+        $("#iform").trigger("reset");
+       
+
+        var id = $(this).data('id');
+        console.log(id);
+        $('#itemModal').modal('show');
+        $('<input>').attr({ type: 'hidden', id: 'itemId', name: 'item_id', value: id }).appendTo('#iform');
+
+        $('#itemSubmit').hide()
+        $('#itemUpdate').show()
+
+        $.ajax({
+            method: "GET",
+            url: `${url}api/v1/items/${id}`,
+            dataType: "json",
+            success: function (data) {
+                const { result } = data
+                console.log(result);
+                $('#desc').val(result[0].description)
+                $('#sell').val(result[0].sell_price)
+                $('#cost').val(result[0].cost_price)
+                $('#qty').val(result[0].quantity)
+                $("#iform").append(`<img src="${url}/${result[0].image}" width='200px', height='200px' id="itemImage"   />`)
+
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    });
 })
