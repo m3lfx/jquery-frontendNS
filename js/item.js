@@ -28,7 +28,7 @@ $(document).ready(function () {
             {
                 data: null,
                 render: function (data, type, row) {
-                    return `<img src="${url}/${data.image}" width="50" height="60">`;
+                    return `<img src="${url}${data.image}" width="50" height="60">`;
                 }
             },
 
@@ -100,7 +100,7 @@ $(document).ready(function () {
                 $('#sell').val(result[0].sell_price)
                 $('#cost').val(result[0].cost_price)
                 $('#qty').val(result[0].quantity)
-                $("#iform").append(`<img src="${url}/${result[0].image}" width='200px', height='200px' id="itemImage"   />`)
+                $("#iform").append(`<img src="${url}${result[0].image}" width='200px', height='200px' id="itemImage"   />`)
 
             },
             error: function (error) {
