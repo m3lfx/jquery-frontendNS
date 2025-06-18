@@ -79,7 +79,7 @@ $(document).ready(function () {
         $('#itemImage').remove()
         $('#itemId').remove()
         $("#iform").trigger("reset");
-       
+
 
         var id = $(this).data('id');
         console.log(id);
@@ -108,4 +108,78 @@ $(document).ready(function () {
             }
         });
     });
+
+    $("#itemUpdate").on('click', function (e) {
+        e.preventDefault();
+        var id = $('#itemId').val();
+        console.log(id);
+        var table = $('#itable').DataTable();
+
+        var data = $('#iform')[0];
+        let formData = new FormData(data);
+
+
+        $.ajax({
+            method: "PUT",
+            url: `${url}api/v1/items/${id}`,
+            data: formData,
+            contentType: false,
+            processData: false,
+
+            dataType: "json",
+            success: function (data) {
+                console.log(data);
+                $('#itemModal').modal("hide");
+                table.ajax.reload()
+
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    });
+
+    $('#itable tbody').on('click', 'a.deletebtn', function (e) {
+        e.preventDefault();
+        var table = $('#itable').DataTable();
+        var id = $(this).data('id');
+        var $row = $(this).closest('tr');
+        console.log(id);
+        bootbox.confirm({
+            message: "do you want to delete this item",
+            buttons: {
+                confirm: {
+                    label: 'yes',
+                    className: 'btn-success'
+                },
+                cancel: {
+                    label: 'no',
+                    className: 'btn-danger'
+                }
+            },
+            callback: function (result) {
+                console.log(result);
+                if (result) {
+                    $.ajax({
+                        method: "DELETE",
+                        url: `${url}api/v1/items/${id}`,
+                        dataType: "json",
+                        success: function (data) {
+                            console.log(data);
+                            $row.fadeOut(4000, function () {
+                                table.row($row).remove().draw();
+                            });
+
+                            bootbox.alert(data.message);
+                        },
+                        error: function (error) {
+                            bootbox.alert(data.error);
+                        }
+                    });
+
+                }
+
+            }
+        });
+    })
 })
