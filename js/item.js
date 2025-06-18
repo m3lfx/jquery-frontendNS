@@ -1,5 +1,5 @@
-$(document).ready(function () { 
-     const url = 'http://172.34.98.64:4000/'
+$(document).ready(function () {
+    const url = 'http://172.34.98.64:4000/'
     $('#itable').DataTable({
         ajax: {
             url: `${url}api/v1/items`,
@@ -43,5 +43,34 @@ $(document).ready(function () {
                 }
             }
         ],
+    });
+
+    $("#itemSubmit").on('click', function (e) {
+        e.preventDefault();
+        var data = $('#iform')[0];
+        console.log(data);
+        let formData = new FormData(data);
+        console.log(formData);
+        for (var pair of formData.entries()) {
+            console.log(pair[0] + ', ' + pair[1]);
+        }
+        $.ajax({
+            method: "POST",
+            url: `${url}api/v1/items`,
+            data: formData,
+            contentType: false,
+            processData: false,
+            dataType: "json",
+            success: function (data) {
+                console.log(data);
+                $("#itemModal").modal("hide");
+                var $itable = $('#itable').DataTable();
+
+                $itable.ajax.reload()
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
     });
 })
