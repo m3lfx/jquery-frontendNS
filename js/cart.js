@@ -71,12 +71,12 @@ $(document).ready(function () {
         let userId = getUserId()
 
         console.log(JSON.stringify(cart));
-        // var data = JSON.stringify(items);
+        
         const payload = JSON.stringify({
             userId,
             cart
         });
-
+console.log(payload)
         $.ajax({
             type: "POST",
             url: `${url}api/v1/create-order`,
