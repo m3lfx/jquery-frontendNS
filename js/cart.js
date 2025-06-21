@@ -52,13 +52,53 @@ $(document).ready(function () {
 
         return userId ?? '';
     }
-    
+
     $('#cartTable').on('click', '.remove-item', function () {
         let idx = $(this).data('idx');
         let cart = getCart();
         cart.splice(idx, 1);
         saveCart(cart);
         renderCart();
+    });
+
+    $('#header').load("header.html");
+
+    $('#checkoutBtn').on('click', function () {
+
+        itemCount = 0;
+        priceTotal = 0;
+        let cart = getCart()
+        let userId = getUserId()
+
+        console.log(JSON.stringify(cart));
+        // var data = JSON.stringify(items);
+        const payload = JSON.stringify({
+            userId,
+            cart
+        });
+
+        $.ajax({
+            type: "POST",
+            url: `${url}api/v1/create-order`,
+            data: payload,
+            dataType: "json",
+            processData: false,
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                console.log(data);
+                // alert(data.status);
+                Swal.fire({
+                    icon: "success",
+                    text: data.message,
+                });
+                localStorage.removeItem('cart')
+                renderCart();
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+
     });
 
     renderCart()
