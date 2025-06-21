@@ -113,4 +113,35 @@ $(document).ready(function () {
             }
         });
     });
+
+     $("#deactivateBtn").on('click', function (e) {
+        e.preventDefault();
+        let email = $("#email").val()
+        let user = {
+            email,
+        }
+        $.ajax({
+            method: "DELETE",
+            url: `${url}api/v1/deactivate`,
+            data: JSON.stringify(user),
+            processData: false,
+            contentType: 'application/json; charset=utf-8',
+            dataType: "json",
+            success: function (data) {
+                console.log(data);
+                Swal.fire({
+                    text: data.message,
+                    showConfirmButton: false,
+                    position: 'bottom-right',
+                    timer: 2000,
+                    timerProgressBar: true
+                });
+                sessionStorage.removeItem('userId')
+                // window.location.href = 'home.html'
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    });
 })
