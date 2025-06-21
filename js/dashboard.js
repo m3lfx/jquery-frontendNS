@@ -14,6 +14,7 @@ $(document).ready(function () {
             new Chart(ctx, {
                 type: 'bar',
                 data: {
+                    // labels: ['taguig', 'tenment']
                     labels: rows.map(row => row.addressline),
                     datasets: [{
                         label: 'Number of Customers per town',
