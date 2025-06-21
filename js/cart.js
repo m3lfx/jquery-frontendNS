@@ -52,6 +52,14 @@ $(document).ready(function () {
 
         return userId ?? '';
     }
+    
+    $('#cartTable').on('click', '.remove-item', function () {
+        let idx = $(this).data('idx');
+        let cart = getCart();
+        cart.splice(idx, 1);
+        saveCart(cart);
+        renderCart();
+    });
 
     renderCart()
 
