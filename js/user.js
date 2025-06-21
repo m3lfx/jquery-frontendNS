@@ -94,7 +94,7 @@ $(document).ready(function () {
         userId = sessionStorage.getItem('userId') ?? sessionStorage.getItem('userId')
        
         var data = $('#profileForm')[0];
-        console.log(data);
+       
         let formData = new FormData(data);
         formData.append('userId', userId)
 
