@@ -88,4 +88,29 @@ $(document).ready(function () {
             }
         });
     });
+
+    $("#updateBtn").on('click', function (event) {
+        event.preventDefault();
+        userId = sessionStorage.getItem('userId') ?? sessionStorage.getItem('userId')
+       
+        var data = $('#profileForm')[0];
+        console.log(data);
+        let formData = new FormData(data);
+        formData.append('userId', userId)
+
+        $.ajax({
+            method: "POST",
+            url: `${url}api/v1/update-profile`,
+            data: formData,
+            contentType: false,
+            processData: false,
+            dataType: "json",
+            success: function (data) {
+                console.log(data);
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    });
 })
