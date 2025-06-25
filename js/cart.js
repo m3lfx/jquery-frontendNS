@@ -47,10 +47,26 @@ $(document).ready(function () {
         $('#cartTable').html(html);
     }
 
-    function getUserId() {
-        let userId = sessionStorage.getItem('userId');
+    // function getUserId() {
+    //     let userId = sessionStorage.getItem('userId');
 
-        return userId ?? '';
+    //     return userId ?? '';
+    // }
+
+    const getToken = () => {
+        const token = sessionStorage.getItem('token');
+
+        if (!token) {
+            Swal.fire({
+                icon: 'warning',
+                text: 'You must be logged in to access this page.',
+                showConfirmButton: true
+            }).then(() => {
+                window.location.href = 'login.html';
+            });
+            return;
+        }
+        return JSON.parse(token)
     }
 
     $('#cartTable').on('click', '.remove-item', function () {
@@ -68,36 +84,42 @@ $(document).ready(function () {
         itemCount = 0;
         priceTotal = 0;
         let cart = getCart()
-        let userId = getUserId()
+        // let userId = getUserId()
 
         console.log(JSON.stringify(cart));
-        
+
         const payload = JSON.stringify({
-            userId,
             cart
         });
-console.log(payload)
-        $.ajax({
-            type: "POST",
-            url: `${url}api/v1/create-order`,
-            data: payload,
-            dataType: "json",
-            processData: false,
-            contentType: 'application/json; charset=utf-8',
-            success: function (data) {
-                console.log(data);
-                // alert(data.status);
-                Swal.fire({
-                    icon: "success",
-                    text: data.message,
-                });
-                localStorage.removeItem('cart')
-                renderCart();
-            },
-            error: function (error) {
-                console.log(error);
-            }
-        });
+        console.log(payload)
+        if (getToken()) {
+            $.ajax({
+                type: "POST",
+                url: `${url}api/v1/create-order`,
+                data: payload,
+                dataType: "json",
+                processData: false,
+                contentType: 'application/json; charset=utf-8',
+                headers: {
+                    "Authorization": "Bearer " + getToken()
+                },
+                success: function (data) {
+                    console.log(data);
+                    // alert(data.status);
+                    Swal.fire({
+                        icon: "success",
+                        text: data.message,
+                    });
+                    localStorage.removeItem('cart')
+                    renderCart();
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+
+        }
+
 
     });
 

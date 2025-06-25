@@ -101,22 +101,21 @@ $(document).ready(function () {
         }
     });
 
-    $("#home").load("header.html", function () {
-        // After header is loaded, check sessionStorage for userId
-        if (sessionStorage.getItem('userId')) {
-            // Change Login link to Logout
-            const $loginLink = $('a.nav-link[href="login.html"]');
-            $loginLink.text('Logout').attr({ 'href': '#', 'id': 'logout-link' }).on('click', function (e) {
-                e.preventDefault();
-                sessionStorage.removeItem('userId');
-                window.location.href = 'login.html';
-            });
-        }
-    });
+    // $("#home").load("header.html", function () {
+    //     // After header is loaded, check sessionStorage for userId
+    //     if (sessionStorage.getItem('userId')) {
+    //         // Change Login link to Logout
+    //         const $loginLink = $('a.nav-link[href="login.html"]');
+    //         $loginLink.text('Logout').attr({ 'href': '#', 'id': 'logout-link' }).on('click', function (e) {
+    //             e.preventDefault();
+    //             sessionStorage.removeItem('userId');
+    //             window.location.href = 'login.html';
+    //         });
+    //     }
+    // });
 
     $(document).on('click', '#detailsAddToCart', function () {
-        console.log(getToken())
-        if (getToken()) {
+        
             const qty = parseInt($("#detailsQty").val());
             const id = $("#detailsItemId").val();
             const description = $("#productDetailsModalLabel").text();
@@ -142,7 +141,9 @@ $(document).ready(function () {
             
             itemCount++;
             $('#itemCount').text(itemCount).css('display', 'block');
+            $('#productDetailsModal').modal('hide')
             console.log(cart)
-        }
+        
     });
+    $("#home").load("header.html")
 })

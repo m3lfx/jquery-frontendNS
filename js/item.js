@@ -1,5 +1,22 @@
 $(document).ready(function () {
     const url = 'http://172.34.98.64:4000/'
+
+    const getToken = () => {
+        const token = sessionStorage.getItem('token');
+
+        if (!token) {
+            Swal.fire({
+                icon: 'warning',
+                text: 'You must be logged in to access this page.',
+                showConfirmButton: true
+            }).then(() => {
+                window.location.href = 'login.html';
+            });
+            return;
+        }
+        return JSON.parse(token)
+    }
+
     $('#itable').DataTable({
         ajax: {
             url: `${url}api/v1/items`,
@@ -49,29 +66,48 @@ $(document).ready(function () {
         e.preventDefault();
         var data = $('#iform')[0];
         console.log(data);
-        let formData = new FormData(data);
-        console.log(formData);
-        for (var pair of formData.entries()) {
-            console.log(pair[0] + ', ' + pair[1]);
-        }
-        $.ajax({
-            method: "POST",
-            url: `${url}api/v1/items`,
-            data: formData,
-            contentType: false,
-            processData: false,
-            dataType: "json",
-            success: function (data) {
-                console.log(data);
-                $("#itemModal").modal("hide");
-                var $itable = $('#itable').DataTable();
-
-                $itable.ajax.reload()
-            },
-            error: function (error) {
-                console.log(error);
+        if (getToken()) {
+            let formData = new FormData(data);
+            console.log(formData);
+            for (var pair of formData.entries()) {
+                console.log(pair[0] + ', ' + pair[1]);
             }
-        });
+            const token = getToken()
+
+            $.ajax({
+                method: "POST",
+                url: `${url}api/v1/items`,
+                data: formData,
+                contentType: false,
+                processData: false,
+                dataType: "json",
+                headers: {
+                    "Authorization": "Bearer " + token
+                },
+                success: function (data) {
+                    console.log(data);
+                    $("#itemModal").modal("hide");
+
+                    var $itable = $('#itable').DataTable();
+
+                    $itable.ajax.reload()
+                },
+                error: function (error) {
+                    // Swal.fire({
+                    //     icon: "error",
+                    //     text: error.responseText,
+                    //     showConfirmButton: false,
+                    //     // position: 'bottom-right',
+                    //     timer: 3000,
+                    //     timerProgressBar: true
+
+                    // });
+                    console.log(error);
+                }
+            });
+
+        }
+
     });
 
     $('#itable tbody').on('click', 'a.editBtn', function (e) {
@@ -145,41 +181,48 @@ $(document).ready(function () {
         var id = $(this).data('id');
         var $row = $(this).closest('tr');
         console.log(id);
-        bootbox.confirm({
-            message: "do you want to delete this item",
-            buttons: {
-                confirm: {
-                    label: 'yes',
-                    className: 'btn-success'
+        if (getToken()) {
+            bootbox.confirm({
+                message: "do you want to delete this item",
+                buttons: {
+                    confirm: {
+                        label: 'yes',
+                        className: 'btn-success'
+                    },
+                    cancel: {
+                        label: 'no',
+                        className: 'btn-danger'
+                    }
                 },
-                cancel: {
-                    label: 'no',
-                    className: 'btn-danger'
+                callback: function (result) {
+                    console.log(result);
+                    if (result) {
+                        $.ajax({
+                            method: "DELETE",
+                            url: `${url}api/v1/items/${id}`,
+                            dataType: "json",
+                            headers: {
+                                "Authorization": "Bearer " + getToken()
+                            },
+                            success: function (data) {
+                                console.log(data);
+                                $row.fadeOut(4000, function () {
+                                    table.row($row).remove().draw();
+                                });
+
+                                bootbox.alert(data.message);
+                            },
+                            error: function (error) {
+                                bootbox.alert(data.error);
+                            }
+                        });
+
+                    }
+
                 }
-            },
-            callback: function (result) {
-                console.log(result);
-                if (result) {
-                    $.ajax({
-                        method: "DELETE",
-                        url: `${url}api/v1/items/${id}`,
-                        dataType: "json",
-                        success: function (data) {
-                            console.log(data);
-                            $row.fadeOut(4000, function () {
-                                table.row($row).remove().draw();
-                            });
+            });
 
-                            bootbox.alert(data.message);
-                        },
-                        error: function (error) {
-                            bootbox.alert(data.error);
-                        }
-                    });
+        }
 
-                }
-
-            }
-        });
     })
 })

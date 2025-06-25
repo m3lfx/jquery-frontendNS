@@ -71,7 +71,7 @@ $(document).ready(function () {
                     timerProgressBar: true
 
                 });
-                sessionStorage.setItem('userId', JSON.stringify(data.user.id))
+                sessionStorage.setItem('token', JSON.stringify(data.token))
                 window.location.href = 'profile.html'
             },
             error: function (error) {
